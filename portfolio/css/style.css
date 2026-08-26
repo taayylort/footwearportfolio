@@ -1,0 +1,806 @@
+/* =========================================================================
+   TAYLOR TRAN — FOOTWEAR PORTFOLIO
+   Theme: Frutiger Aero (Windows Aero glass / aurora / bokeh) × Aquarium
+   Redesign reference: frutigeraeroarchive.org — aurora borealis skies,
+   glossy glass windows, gel buttons, bokeh light, humanist type.
+   ========================================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Mukta:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+:root{
+  /* ---- aurora / aero color tokens ---- */
+  --aurora-teal:   #16e0b0;
+  --aurora-blue:   #3aa7ff;
+  --aurora-violet: #9b6bff;
+  --sun-gold:      #ffd76a;
+  --sky-deep:      #071c33;
+  --sky-deep-2:    #0c2f52;
+
+  --glass-hi:      rgba(255,255,255,0.75);
+  --glass-lo:      rgba(255,255,255,0.10);
+  --chrome-silver: #e7f1f5;
+  --ink-deep:      #0b2436;
+  --foam-white:    #f6fdfc;
+
+  /* ---- semantic ---- */
+  --text-on-dark: var(--foam-white);
+  --text-on-light: var(--ink-deep);
+  --text-dim: rgba(246,253,252,0.72);
+
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 8px;
+
+  --font-display: 'Quicksand', system-ui, sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, 'Courier New', monospace;
+  --font-body: 'Mukta', system-ui, sans-serif;
+
+  --shadow-deep: 0 30px 70px -24px rgba(2,10,20,0.6), 0 10px 24px -10px rgba(2,10,20,0.45);
+  --shadow-soft: 0 12px 30px -14px rgba(2,10,20,0.45);
+  --glow-blue: 0 0 40px rgba(58,167,255,0.22);
+}
+
+*{ box-sizing: border-box; }
+html{ scroll-behavior: smooth; }
+
+body{
+  margin:0;
+  min-height:100vh;
+  font-family: var(--font-body);
+  color: var(--text-on-dark);
+  background: linear-gradient(180deg, var(--sky-deep) 0%, var(--sky-deep-2) 55%, #133a5c 100%);
+  background-attachment: fixed;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ---- aurora borealis backdrop: broad drifting color bands ---- */
+.aurora-layer{
+  position: fixed;
+  inset: -10%;
+  z-index: 0;
+  pointer-events: none;
+  filter: blur(60px) saturate(135%);
+  opacity: 0.55;
+  background:
+    radial-gradient(45% 30% at 15% 10%, var(--aurora-teal), transparent 70%),
+    radial-gradient(40% 35% at 60% 0%, var(--aurora-violet), transparent 65%),
+    radial-gradient(50% 30% at 90% 25%, var(--aurora-blue), transparent 70%),
+    radial-gradient(35% 25% at 30% 85%, var(--aurora-teal), transparent 70%);
+  animation: auroraDrift 26s ease-in-out infinite alternate;
+}
+@keyframes auroraDrift{
+  0%{ transform: translate3d(0,0,0) rotate(0deg); }
+  50%{ transform: translate3d(2%, -3%, 0) rotate(2deg); }
+  100%{ transform: translate3d(-3%, 2%, 0) rotate(-1deg); }
+}
+
+/* ---- floating bokeh discs, like light through water ---- */
+.bokeh-layer{
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.bokeh-layer span{
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.85), rgba(255,255,255,0.04) 70%);
+  filter: blur(1px);
+  opacity: 0.5;
+  animation: bokehFloat linear infinite;
+}
+@keyframes bokehFloat{
+  0%{ transform: translateY(0) translateX(0); opacity:0; }
+  8%{ opacity:0.55; }
+  92%{ opacity:0.5; }
+  100%{ transform: translateY(-115vh) translateX(30px); opacity:0; }
+}
+
+/* fine sparkle shimmer (kept subtle, sits above aurora) */
+body::after{
+  content:"";
+  position: fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  opacity:0.4;
+  mix-blend-mode: screen;
+  background-image:
+    radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 80% 60%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1.5px 1.5px at 40% 80%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 60% 30%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1.5px 1.5px at 90% 85%, rgba(255,255,255,0.35), transparent);
+  animation: driftLight 18s ease-in-out infinite alternate;
+}
+@keyframes driftLight{
+  from{ transform: translateY(0) translateX(0); }
+  to{ transform: translateY(-30px) translateX(20px); }
+}
+
+a{ color: inherit; text-decoration: none; }
+img{ max-width:100%; display:block; }
+h1,h2,h3,h4{ font-family: var(--font-display); margin:0; font-weight:600; }
+p{ margin:0; }
+
+:focus-visible{
+  outline: 3px solid var(--sun-gold);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.eyebrow{
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--aurora-teal);
+}
+
+/* =========================================================================
+   DOCK NAV — Aero taskbar: glassy pill, gel orbs, glossy highlight seam
+   ========================================================================= */
+.dock-wrap{
+  position: fixed;
+  top: 18px;
+  left: 0; right:0;
+  z-index: 100;
+  display:flex;
+  justify-content:center;
+  padding: 0 16px;
+}
+
+.dock{
+  position: relative;
+  display:flex;
+  align-items:center;
+  gap: 22px;
+  padding: 10px 14px 10px 16px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(255,255,255,0.55) 42%, rgba(200,225,240,0.45) 43%, rgba(170,205,225,0.42) 100%);
+  border: 1px solid rgba(255,255,255,0.65);
+  box-shadow: var(--shadow-soft), var(--glow-blue), inset 0 1px 0 rgba(255,255,255,0.95);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  max-width: 720px;
+  width: 100%;
+  overflow: hidden;
+}
+/* glossy highlight streak across the glass seam */
+.dock::before{
+  content:"";
+  position:absolute;
+  top:0; left:0; right:0; height:46%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.75), rgba(255,255,255,0));
+  pointer-events:none;
+}
+
+.dock-lights{
+  display:flex;
+  gap:7px;
+  flex-shrink:0;
+  position:relative;
+  z-index:1;
+}
+.dock-lights span{
+  width:11px; height:11px; border-radius:50%;
+  display:inline-block;
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.8), inset 0 -2px 3px rgba(0,0,0,0.18), 0 0 6px rgba(0,0,0,0.15);
+}
+.dock-lights span:nth-child(1){ background: radial-gradient(circle at 35% 30%, #ffb199, #ff6a4d); }
+.dock-lights span:nth-child(2){ background: radial-gradient(circle at 35% 30%, #f4ff9e, var(--sun-gold)); }
+.dock-lights span:nth-child(3){ background: radial-gradient(circle at 35% 30%, #8fe8ff, var(--aurora-blue)); }
+
+.dock-brand{
+  font-family: var(--font-display);
+  font-weight:600;
+  font-size: 0.95rem;
+  color: var(--ink-deep);
+  white-space: nowrap;
+  margin-right: auto;
+  position:relative;
+  z-index:1;
+}
+.dock-brand span{
+  display:block;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  color: rgba(11,36,54,0.55);
+  font-weight: 400;
+}
+
+.dock-links{
+  display:flex;
+  gap: 8px;
+  position:relative;
+  z-index:1;
+}
+
+.dock-btn{
+  position: relative;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-deep);
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.65), rgba(255,255,255,0.25) 48%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.08) 100%);
+  border: 1px solid rgba(255,255,255,0.7);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.85);
+  transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+  white-space: nowrap;
+  overflow:hidden;
+}
+.dock-btn:hover{
+  background: linear-gradient(180deg, #bdeeff, var(--aurora-blue) 48%, #2f8fe0 50%, #1c74c4 100%);
+  color: var(--foam-white);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255,255,255,0.6);
+}
+.dock-btn.is-active{
+  background: linear-gradient(180deg, #d4ffe9, var(--aurora-teal) 48%, #0fc79a 50%, #0aa982 100%);
+  color: var(--ink-deep);
+}
+
+@media (max-width: 560px){
+  .dock-brand span{ display:none; }
+  .dock{ gap: 12px; }
+}
+
+/* =========================================================================
+   TANK / AERO WINDOW — the signature component.
+   A true Aero-glass panel: bright glossy seam near the top, cool glass
+   tint beneath, soft blue outer glow, corner "power" orb, rising bubbles.
+   ========================================================================= */
+.tank{
+  position: relative;
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.42) 0%, rgba(255,255,255,0.14) 30%, rgba(160,205,230,0.10) 31%, rgba(70,110,140,0.18) 100%);
+  border: 1px solid rgba(255,255,255,0.35);
+  box-shadow: var(--shadow-deep), var(--glow-blue), inset 0 1px 0 rgba(255,255,255,0.5);
+  overflow: hidden;
+  isolation: isolate;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* bright glass highlight streak, the classic Aero "seam" */
+.tank::before{
+  content:"";
+  position:absolute;
+  top:0; left:4%; right:4%;
+  height: 34%;
+  border-radius: 999px / 60px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0));
+  pointer-events:none;
+  z-index: 3;
+  opacity: 0.85;
+}
+
+/* watery caustic tint inside the glass */
+.tank::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(60% 50% at 15% 0%, rgba(58,167,255,0.30), transparent 60%),
+    radial-gradient(50% 40% at 95% 100%, rgba(22,224,176,0.22), transparent 60%);
+  pointer-events:none;
+  z-index: 1;
+}
+
+.tank-inner{
+  position: relative;
+  z-index: 2;
+  padding: 34px;
+}
+
+/* corner "power" orb — glossy 3D sphere */
+.tank-led{
+  position:absolute;
+  top: 16px; right: 18px;
+  width: 12px; height:12px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #eaffef, var(--aurora-teal) 55%, #0aa982 100%);
+  box-shadow: 0 0 10px 2px rgba(22,224,176,0.65), inset 0 1px 1px rgba(255,255,255,0.8);
+  z-index: 4;
+  animation: ledPulse 2.6s ease-in-out infinite;
+}
+@keyframes ledPulse{
+  0%,100%{ opacity:1; }
+  50%{ opacity:0.55; }
+}
+
+/* rising bubbles inside tank, revealed on hover for interactive tiles */
+.bubbles{
+  position:absolute;
+  inset:0;
+  z-index: 2;
+  pointer-events:none;
+  overflow:hidden;
+}
+.bubbles span{
+  position:absolute;
+  bottom:-20px;
+  border-radius:50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(255,255,255,0.05) 70%);
+  opacity:0;
+  transition: opacity 0.3s ease;
+}
+.tank:hover .bubbles span, .tank:focus-within .bubbles span{
+  opacity: 0.85;
+  animation: rise 3.6s ease-in infinite;
+}
+@keyframes rise{
+  0%{ transform: translateY(0) translateX(0); opacity:0; }
+  10%{ opacity:0.85; }
+  100%{ transform: translateY(-320px) translateX(10px); opacity:0; }
+}
+
+/* scanline sheen sweep on hover */
+.tank .sheen{
+  position:absolute;
+  top:0; left:-60%;
+  width:40%; height:100%;
+  background: linear-gradient(75deg, transparent, rgba(255,255,255,0.22), transparent);
+  transform: skewX(-18deg);
+  transition: left 0.7s ease;
+  z-index: 3;
+  pointer-events:none;
+}
+.tank:hover .sheen{ left: 130%; }
+
+/* =========================================================================
+   LAYOUT SHELL
+   ========================================================================= */
+.page{
+  position:relative;
+  z-index:1;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 120px 24px 80px;
+}
+
+/* =========================================================================
+   HOME — ABOUT PANEL
+   ========================================================================= */
+.about-tank .tank-inner{
+  display:grid;
+  grid-template-columns: 150px 1fr;
+  gap: 32px;
+  align-items:center;
+}
+.about-portrait{
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255,255,255,0.65), transparent 45%),
+    linear-gradient(160deg, var(--aurora-blue), var(--aurora-teal));
+  border: 4px solid rgba(255,255,255,0.6);
+  box-shadow: var(--shadow-soft), inset 0 2px 12px rgba(255,255,255,0.45);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: rgba(11,36,54,0.55);
+  text-align:center;
+  padding: 10px;
+  flex-shrink:0;
+}
+.about-name{
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  color: var(--foam-white);
+  margin-bottom: 4px;
+}
+.about-role{
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--sun-gold);
+  letter-spacing: 0.04em;
+  margin-bottom: 16px;
+  display:block;
+}
+.about-copy{
+  font-size: 1.02rem;
+  line-height: 1.65;
+  color: var(--text-dim);
+  max-width: 62ch;
+}
+
+@media (max-width: 700px){
+  .about-tank .tank-inner{
+    grid-template-columns: 1fr;
+    text-align:center;
+    justify-items:center;
+  }
+  .about-copy{ margin: 0 auto; }
+}
+
+/* =========================================================================
+   PROJECTS GRID — "THE TANKS"
+   ========================================================================= */
+.section-head{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  margin: 64px 0 24px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.section-head h2{
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  color: var(--foam-white);
+}
+.section-head .eyebrow{ margin-bottom: 6px; display:block; }
+
+.tank-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 22px;
+}
+
+.tank-tile{
+  display:block;
+  aspect-ratio: 4 / 5;
+  cursor: pointer;
+  transition: transform 0.35s cubic-bezier(.2,.8,.2,1), box-shadow 0.35s ease;
+}
+.tank-tile:hover, .tank-tile:focus-visible{
+  transform: translateY(-6px) scale(1.02);
+}
+
+.tank-tile .tank-inner{
+  padding: 0;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+}
+
+.tile-viewport{
+  flex:1;
+  position:relative;
+  background: linear-gradient(160deg, var(--tank-hue-a, #3aa7ff), var(--tank-hue-b, #0c2f52));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+.tile-viewport::after{
+  content:"";
+  position:absolute; inset:0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.28) 0%, transparent 30%);
+  opacity:0.8;
+}
+.tile-placeholder-mark{
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.8);
+  text-transform:uppercase;
+  z-index:2;
+}
+.tile-label{
+  padding: 14px 16px 16px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(225,240,245,0.95));
+}
+.tile-tag{
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  color: rgba(11,36,54,0.55);
+  text-transform: uppercase;
+  display:block;
+  margin-bottom: 3px;
+}
+.tile-title{
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--ink-deep);
+  font-weight: 600;
+}
+
+/* =========================================================================
+   FOOTER
+   ========================================================================= */
+.site-footer{
+  position:relative;
+  z-index:1;
+  border-top: 1px solid rgba(255,255,255,0.15);
+  margin-top: 60px;
+  padding: 36px 24px 44px;
+  display:flex;
+  flex-wrap:wrap;
+  gap: 16px;
+  justify-content:space-between;
+  align-items:center;
+  max-width: 1180px;
+  margin-left:auto; margin-right:auto;
+}
+.footer-links{
+  display:flex;
+  gap: 20px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--aurora-teal);
+}
+.footer-note{
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: rgba(246,253,252,0.45);
+}
+
+/* =========================================================================
+   RESUME — VERTICAL TIMELINE (fiber-optic aurora spine)
+   ========================================================================= */
+.resume-head{
+  margin-bottom: 50px;
+}
+.resume-head h1{
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  color: var(--foam-white);
+}
+.resume-contact{
+  display:flex;
+  flex-wrap:wrap;
+  gap: 14px 22px;
+  margin-top: 14px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--aurora-teal);
+}
+.resume-contact a:hover{ color: var(--sun-gold); }
+
+.timeline{
+  position: relative;
+  padding-left: 46px;
+}
+/* the glowing fiber-optic / aurora spine */
+.timeline::before{
+  content:"";
+  position:absolute;
+  left: 14px;
+  top: 6px;
+  bottom: 6px;
+  width: 4px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, var(--aurora-teal), var(--aurora-blue) 50%, var(--aurora-violet));
+  box-shadow: 0 0 16px rgba(58,167,255,0.6);
+}
+
+.timeline-group{
+  margin-bottom: 46px;
+}
+.timeline-group > .eyebrow{
+  margin-bottom: 18px;
+  position:relative;
+}
+.timeline-group > .eyebrow::before{
+  content:"";
+  position:absolute;
+  left: -38px;
+  top: 3px;
+  width: 14px; height:14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff6d9, var(--sun-gold) 60%, #e0af2c 100%);
+  border: 3px solid var(--sky-deep-2);
+  box-shadow: 0 0 0 2px var(--sun-gold), 0 0 12px rgba(255,215,106,0.75);
+}
+
+.timeline-item{
+  position: relative;
+  margin-bottom: 28px;
+}
+.timeline-item::before{
+  content:"";
+  position:absolute;
+  left: -38px;
+  top: 8px;
+  width: 12px; height:12px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #dff3ff, var(--aurora-blue) 60%, #1c6fc4 100%);
+  border: 3px solid var(--sky-deep-2);
+  box-shadow: 0 0 0 2px var(--aurora-blue), 0 0 10px rgba(58,167,255,0.65);
+}
+
+.timeline-item .tank{ padding: 0; }
+.timeline-item .tank-inner{ padding: 22px 26px; }
+
+.role-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  flex-wrap:wrap;
+  gap: 8px 16px;
+  margin-bottom: 4px;
+}
+.role-title{
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--ink-deep);
+  font-weight: 600;
+}
+.role-dates{
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: rgba(11,36,54,0.55);
+  white-space: nowrap;
+}
+.role-org{
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight:700;
+  color: #175a8c;
+  margin-bottom: 12px;
+  display:block;
+}
+.role-list{
+  margin:0;
+  padding-left: 18px;
+  color: rgba(11,36,54,0.85);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+.role-list li{ margin-bottom: 6px; }
+.role-list li:last-child{ margin-bottom:0; }
+
+.skills-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap: 18px;
+}
+.skill-card .tank-inner{ padding: 20px 24px; }
+.skill-cat{
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  text-transform:uppercase;
+  letter-spacing: 0.08em;
+  color: #175a8c;
+  display:block;
+  margin-bottom: 8px;
+}
+.skill-items{
+  font-family: var(--font-body);
+  font-weight:700;
+  color: var(--ink-deep);
+  font-size: 0.92rem;
+  line-height:1.6;
+}
+
+.resume-download{
+  margin-top: 46px;
+  display:flex;
+  justify-content:center;
+}
+.btn-glass{
+  position: relative;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-deep);
+  padding: 14px 30px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #eaffef, var(--aurora-teal) 46%, #0fc79a 48%, #0aa982 100%);
+  border: 1px solid rgba(255,255,255,0.7);
+  box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255,255,255,0.7);
+  transition: transform 0.2s ease;
+  cursor:pointer;
+  overflow: hidden;
+}
+.btn-glass:hover{ transform: translateY(-3px); }
+
+/* =========================================================================
+   PROJECT DETAIL PAGE
+   ========================================================================= */
+.project-back{
+  display:inline-flex;
+  align-items:center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform:uppercase;
+  letter-spacing: 0.06em;
+  color: var(--aurora-teal);
+  margin-bottom: 28px;
+  padding: 8px 16px 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.08);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.project-back:hover{ background: rgba(255,255,255,0.18); color: var(--sun-gold); }
+
+.project-hero{
+  aspect-ratio: 16/8;
+  margin-bottom: 28px;
+}
+.project-hero .tank-inner{
+  height:100%;
+  padding:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: linear-gradient(160deg, var(--tank-hue-a, #3aa7ff), var(--tank-hue-b, #0c2f52));
+}
+
+.project-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  flex-wrap:wrap;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+.project-title{
+  font-size: clamp(1.8rem, 3.4vw, 2.6rem);
+  color: var(--foam-white);
+}
+.project-index{
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--sun-gold);
+  padding-top: 8px;
+}
+
+.project-desc .tank-inner{
+  padding: 30px 34px;
+}
+.project-desc p{
+  color: rgba(11,36,54,0.88);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+.project-desc .eyebrow{ color: #175a8c; margin-bottom: 10px; }
+
+.gallery-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+  gap: 18px;
+  margin-top: 28px;
+}
+.gallery-grid .tank{ aspect-ratio: 4/3; }
+.gallery-grid .tank-inner{
+  height:100%; padding:0;
+  display:flex; align-items:center; justify-content:center;
+  background: linear-gradient(160deg, var(--tank-hue-a, #3aa7ff), var(--tank-hue-b, #0c2f52));
+}
+
+.project-nav{
+  display:flex;
+  justify-content:space-between;
+  margin-top: 48px;
+  gap: 16px;
+  flex-wrap:wrap;
+}
+.project-nav a{
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform:uppercase;
+  letter-spacing:0.05em;
+  color: var(--aurora-teal);
+  padding: 12px 20px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.06);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.project-nav a:hover{ background: rgba(255,255,255,0.18); color: var(--sun-gold); }
+
+/* =========================================================================
+   REDUCED MOTION
+   ========================================================================= */
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior:auto; }
+  *, *::before, *::after{
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
